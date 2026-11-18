@@ -1,0 +1,129 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Sam's Rainy Dublin</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
+  <meta name="theme-color" content="#1b1526">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="mobile-web-app-capable" content="yes">
+  <script>document.write('<link rel="stylesheet" href="styles/game.css?v=' + Date.now() + '">');</script>
+</head>
+<body>
+  <div id="stage">
+    <canvas id="game" aria-label="Sam's Rainy Dublin game"></canvas>
+
+    <div id="hud" hidden>
+      <div class="hud-left">
+        <div id="hud-portrait" class="portrait"></div>
+        <div class="hud-stats">
+          <div id="hud-hearts" class="hearts" aria-label="Health"></div>
+          <div class="hud-row">
+            <span id="hud-lives" class="pill">Lives 3</span>
+            <span id="hud-coins" class="pill coin-pill">0</span>
+            <span id="hud-points" class="pill" hidden></span>
+            <span id="hud-special" class="pill special-pill" hidden><span class="special-track"><span id="special-fill" class="special-fill"></span></span></span>
+          </div>
+        </div>
+      </div>
+      <div class="hud-center">
+        <div id="hud-section" class="section-name"></div>
+        <div class="progress"><div id="hud-progress" class="progress-fill"></div></div>
+        <div id="boss-bar" class="boss-bar" hidden>
+          <div id="boss-name" class="boss-name">The Ex</div>
+          <div class="boss-track"><div id="boss-fill" class="boss-fill"></div></div>
+        </div>
+      </div>
+      <button id="btn-swap" class="icon-btn swap-btn" aria-label="Swap hero" tabindex="-1" hidden>SWAP</button>
+      <button id="btn-pause" class="icon-btn" aria-label="Pause" tabindex="-1">II</button>
+    </div>
+
+    <div id="toast" class="toast" aria-live="polite"></div>
+
+    <div id="touch" hidden>
+      <div id="touch-dpad" aria-label="Move left or right">
+        <span class="arrow arrow-left"></span>
+        <span class="arrow arrow-right"></span>
+      </div>
+      <button id="touch-special" aria-label="Special attack" tabindex="-1" hidden>SPECIAL</button>
+      <button id="touch-block" aria-label="Block" tabindex="-1">BLOCK</button>
+      <button id="touch-throw" aria-label="Throw flip-flop" tabindex="-1">THROW</button>
+      <button id="touch-jump" aria-label="Jump" tabindex="-1">JUMP</button>
+    </div>
+
+    <div id="story" class="story" hidden>
+      <button id="story-skip" class="story-skip">Skip</button>
+      <div id="story-box" class="story-box" hidden>
+        <div id="story-portrait" class="portrait story-portrait"></div>
+        <div class="story-words">
+          <div id="story-speaker" class="story-speaker"></div>
+          <p id="story-text" class="story-text" aria-live="polite"></p>
+          <div id="story-next" class="story-next">Click, tap or press Space to continue</div>
+        </div>
+      </div>
+    </div>
+
+    <div id="mini" class="mini" hidden></div>
+
+    <div id="screen" class="screen">
+      <div class="card">
+        <div id="screen-art" class="screen-art"></div>
+        <div class="screen-body">
+          <p id="screen-kicker" class="kicker"></p>
+          <h1 id="screen-title"></h1>
+          <p id="screen-text"></p>
+          <div id="screen-stats" class="stats"></div>
+          <div class="screen-actions">
+            <button id="screen-primary" class="btn primary"></button>
+            <button id="screen-secondary" class="btn" hidden></button>
+            <button id="screen-third" class="btn" hidden></button>
+          </div>
+          <p id="screen-help" class="help"></p>
+        </div>
+      </div>
+    </div>
+
+    <div id="rotate" class="rotate">Turn your phone sideways to play</div>
+  </div>
+
+  <!-- Every page load fetches fresh files, so a refresh always shows the latest game.
+       To add a script, add its path to this list. The order matters. -->
+  <script>
+    (function () {
+      var version = Date.now();
+      [
+        // Core
+        'src/core/config.js', 'src/core/utils.js', 'src/core/assets.js', 'src/core/input.js', 'src/core/music.js',
+        // Physics and camera
+        'src/physics/physics.js', 'src/camera/camera.js',
+        // Environment
+        'src/environment/artAtlas.js', 'src/environment/paintKit.js', 'src/environment/buildings.js',
+        'src/environment/platformArt.js', 'src/environment/bridgeArt.js', 'src/environment/weather.js',
+        'src/environment/environment.js', 'src/environment/nightArt.js', 'src/environment/nightEnvironment.js', 'src/environment/travelArt.js',
+        // Level data: add a section file here, then list it in level01.js
+        'src/level/levelKit.js',
+        'src/level/sections/01-temple-bar.js', 'src/level/sections/02-shopping-district.js',
+        'src/level/sections/03-river-liffey.js', 'src/level/sections/04-old-dublin.js',
+        'src/level/sections/05-back-streets.js', 'src/level/sections/06-hapenny-bridge.js',
+        'src/level/level01.js', 'src/level/level02/sections.js', 'src/level/level03/sections.js', 'src/level/level.js',
+        // Actors
+        'src/player/samRig.js', 'src/player/samAnimations.js', 'src/player/player.js', 'src/player/thais.js', 'src/player/trio.js',
+        'src/weapons/flipFlops.js',
+        'src/enemies/enemyBase.js', 'src/enemies/pigeon.js', 'src/enemies/seagull.js', 'src/enemies/keg.js',
+        'src/enemies/nightMen.js', 'src/enemies/sizeCommenters.js', 'src/enemies/exHusband.js', 'src/enemies/flor.js', 'src/enemies/bossFight.js',
+        'src/collectibles/collectibles.js', 'src/collectibles/checkpoint.js',
+        // Interface
+        'src/ui/hud.js', 'src/ui/screens.js', 'src/ui/touchControls.js', 'src/ui/miniGames.js',
+        // Story
+        'src/story/cast.js', 'src/story/storyArt.js', 'src/story/bossCard.js', 'src/story/storyPlayer.js', 'src/story/level01Story.js',
+        'src/story/level02/level02Art.js', 'src/story/level02/level02Story.js',
+        'src/story/level03/level03Art.js', 'src/story/level03/level03Story.js',
+        // Game loop
+        'src/core/game.js', 'src/core/gameProgress.js', 'src/core/gameTrio.js', 'src/main.js'
+      ].forEach(function (file) {
+        document.write('<script src="' + file + '?v=' + version + '"><\/script>');
+      });
+    })();
+  </script>
+</body>
+</html>
